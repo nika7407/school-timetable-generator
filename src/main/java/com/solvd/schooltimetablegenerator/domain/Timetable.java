@@ -1,5 +1,6 @@
 package com.solvd.schooltimetablegenerator.domain;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -13,7 +14,8 @@ public class Timetable {
     private DayOfWeek dayOfWeek;
     private Integer periodNumber;
 
-    public Timetable() {}
+    public Timetable() {
+    }
 
     public Timetable(Integer id, LocalDate date, Subject subject, Teacher teacher,
                      Classroom classroom, DayOfWeek dayOfWeek, Integer periodNumber) {
@@ -83,10 +85,6 @@ public class Timetable {
         this.periodNumber = periodNumber;
     }
 
-    public enum DayOfWeek {
-        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -111,9 +109,9 @@ public class Timetable {
         return "Timetable{" +
                 "id=" + id +
                 ", date=" + date +
-                ", subject=" + subject +
-                ", teacher=" + teacher +
-                ", classroom=" + classroom +
+                ", subject=" + subject.getName() +
+                ", teacher=" + teacher.getFirstName() +
+                ", classroom=" + classroom.getNumber() +
                 ", dayOfWeek=" + dayOfWeek +
                 ", periodNumber=" + periodNumber +
                 '}';
