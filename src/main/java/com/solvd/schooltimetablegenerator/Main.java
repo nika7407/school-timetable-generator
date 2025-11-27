@@ -192,10 +192,13 @@ public class Main {
         classrooms.add(room402);
 
         TimeTableGeneticAlgorithm ga = new TimeTableGeneticAlgorithm(teachers, subjects, classrooms);
-        List<Timetable> timetable = ga.generateTimetable();
+        List<List<Timetable>> timetable = ga.generateTimetable();
 
-        for (Timetable timetableElement : timetable) {
-            log.info(timetableElement.toString());
+        for (List<Timetable> timetableDay : timetable) {
+          for (Timetable timetable1 : timetableDay){
+              log.info(timetable1.toString());
+          }
+          log.info("------");
         }
 
         log.info("Generated {} teachers", teachers.size());
