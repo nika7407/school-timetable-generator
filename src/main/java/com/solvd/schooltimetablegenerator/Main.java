@@ -40,11 +40,7 @@ public class Main {
         Classroom room101 = new Classroom(1L, 101, false);
         Classroom room102 = new Classroom(2L, 102, false);
         Classroom room201 = new Classroom(3L, 201, true);
-        Classroom room202 = new Classroom(4L, 202, true);
-        Classroom room301 = new Classroom(5L, 301, false);
-        Classroom room302 = new Classroom(6L, 302, false);
-        Classroom room401 = new Classroom(7L, 401, true);
-        Classroom room402 = new Classroom(8L, 402, false);
+
 
         teacher1.addSubject(math);
         teacher1.addSubject(physics);
@@ -84,44 +80,23 @@ public class Main {
 
         math.addClassroom(room101);
         math.addClassroom(room102);
-        math.addClassroom(room301);
-        math.addClassroom(room302);
-        math.addClassroom(room402);
 
         physics.addClassroom(room201);
-        physics.addClassroom(room202);
 
         chemistry.addClassroom(room201);
-        chemistry.addClassroom(room202);
 
         biology.addClassroom(room201);
-        biology.addClassroom(room202);
 
         history.addClassroom(room101);
         history.addClassroom(room102);
-        history.addClassroom(room301);
-        history.addClassroom(room302);
-        history.addClassroom(room402);
 
         geography.addClassroom(room101);
         geography.addClassroom(room102);
-        geography.addClassroom(room301);
-        geography.addClassroom(room302);
-        geography.addClassroom(room402);
-
         english.addClassroom(room101);
         english.addClassroom(room102);
-        english.addClassroom(room301);
-        english.addClassroom(room302);
-        english.addClassroom(room402);
-
-        computerScience.addClassroom(room401);
 
         pe.addClassroom(room101);
         pe.addClassroom(room102);
-        pe.addClassroom(room301);
-        pe.addClassroom(room302);
-        pe.addClassroom(room402);
 
 
         teachers.add(teacher1);
@@ -149,13 +124,16 @@ public class Main {
 
 
         TimeTableGeneticAlgorithm ga = new TimeTableGeneticAlgorithm(teachers, subjects, classrooms);
-        List<Timetable> timetable = ga.generateTimetableForAWeek();
+//        List<Timetable> timetable = ga.generateTimetableForAWeek();
+//
+       List<Timetable> timetableList = ga.generateBestTimetable();
 
-        for (Timetable timetable1 : timetable) {
+        for (Timetable timetable1 : timetableList) {
             log.info(timetable1.toString());
         }
-        log.info("Generated {} teachers", teachers.size());
-        log.info("Generated {} subjects", subjects.size());
-        log.info("Generated {} classrooms", classrooms.size());
+
+        log.info("{} teachers", teachers.size());
+        log.info("{} subjects", subjects.size());
+        log.info("{} classrooms", classrooms.size());
     }
 }
