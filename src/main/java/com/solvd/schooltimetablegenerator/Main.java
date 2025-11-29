@@ -123,45 +123,6 @@ public class Main {
         pe.addClassroom(room302);
         pe.addClassroom(room402);
 
-        room101.addSubject(math);
-        room101.addSubject(history);
-        room101.addSubject(geography);
-        room101.addSubject(english);
-        room101.addSubject(pe);
-
-        room102.addSubject(math);
-        room102.addSubject(history);
-        room102.addSubject(geography);
-        room102.addSubject(english);
-        room102.addSubject(pe);
-
-        room201.addSubject(physics);
-        room201.addSubject(chemistry);
-        room201.addSubject(biology);
-
-        room202.addSubject(physics);
-        room202.addSubject(chemistry);
-        room202.addSubject(biology);
-
-        room301.addSubject(math);
-        room301.addSubject(history);
-        room301.addSubject(geography);
-        room301.addSubject(english);
-        room301.addSubject(pe);
-
-        room302.addSubject(math);
-        room302.addSubject(history);
-        room302.addSubject(geography);
-        room302.addSubject(english);
-        room302.addSubject(pe);
-
-        room401.addSubject(computerScience);
-
-        room402.addSubject(math);
-        room402.addSubject(history);
-        room402.addSubject(geography);
-        room402.addSubject(english);
-        room402.addSubject(pe);
 
         teachers.add(teacher1);
         teachers.add(teacher2);
@@ -185,22 +146,14 @@ public class Main {
         classrooms.add(room101);
         classrooms.add(room102);
         classrooms.add(room201);
-        classrooms.add(room202);
-        classrooms.add(room301);
-        classrooms.add(room302);
-        classrooms.add(room401);
-        classrooms.add(room402);
+
 
         TimeTableGeneticAlgorithm ga = new TimeTableGeneticAlgorithm(teachers, subjects, classrooms);
-        List<List<Timetable>> timetable = ga.generateTimetable();
+        List<Timetable> timetable = ga.generateTimetableForAWeek();
 
-        for (List<Timetable> timetableDay : timetable) {
-          for (Timetable timetable1 : timetableDay){
-              log.info(timetable1.toString());
-          }
-          log.info("------");
+        for (Timetable timetable1 : timetable) {
+            log.info(timetable1.toString());
         }
-
         log.info("Generated {} teachers", teachers.size());
         log.info("Generated {} subjects", subjects.size());
         log.info("Generated {} classrooms", classrooms.size());

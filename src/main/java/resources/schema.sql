@@ -1,3 +1,10 @@
+DROP TABLE IF EXISTS timetable;
+DROP TABLE IF EXISTS teacher_subjects;
+DROP TABLE IF EXISTS subject_classroom;
+DROP TABLE IF EXISTS classrooms;
+DROP TABLE IF EXISTS subjects;
+DROP TABLE IF EXISTS teachers;
+
 CREATE TABLE IF NOT EXISTS teachers (
   ID SERIAL PRIMARY KEY,
   first_name VARCHAR(20),
@@ -13,8 +20,7 @@ CREATE TABLE IF NOT EXISTS subjects (
 
 CREATE TABLE IF NOT EXISTS classrooms (
   ID SERIAL PRIMARY KEY,
-  number INTEGER UNIQUE,
-  isLab BOOLEAN
+  number INTEGER UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS teacher_subjects (
@@ -22,13 +28,6 @@ CREATE TABLE IF NOT EXISTS teacher_subjects (
   subject_id INTEGER REFERENCES subjects(ID),
   PRIMARY KEY (teacher_id, subject_id)
 );
-
-CREATE TABLE IF NOT EXISTS subject_classroom (
-  subject_id INTEGER REFERENCES subjects(ID),
-  classroom_id INTEGER REFERENCES classrooms(ID),
-  PRIMARY KEY (subject_id, classroom_id)
-);
-
 
 CREATE TABLE IF NOT EXISTS timetable (
     ID SERIAL PRIMARY KEY,
