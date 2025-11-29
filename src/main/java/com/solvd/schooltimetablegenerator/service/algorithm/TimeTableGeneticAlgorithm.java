@@ -290,7 +290,7 @@ public class TimeTableGeneticAlgorithm {
 
         TimetableChromosome bestChromosome = null;
 
-        for (int generation = 0; generation < 1000; generation++) {
+        for (int generation = 0; generation < GENERATION; generation++) {
             bestChromosome = findBestChromosome(population);
             population = createNewGeneration(population);
 
