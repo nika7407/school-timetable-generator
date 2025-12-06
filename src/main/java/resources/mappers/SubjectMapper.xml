@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.solvd.schooltimetablegenerator.persistence.SubjectRepository">
+
+    <resultMap id="teacherMap" type="com.solvd.schooltimetablegenerator.domain.Teacher" autoMapping="false">
+        <id property="id" column="teacher_id"/>
+        <result property="firstName" column="teacher_first_name"/>
+        <result property="lastName" column="teacher_last_name"/>
+        <result property="email" column="teacher_email"/>
+    </resultMap>
+
+    <resultMap id="resultMap" type="com.solvd.schooltimetablegenerator.domain.Subject" autoMapping="false" >
+        <id property="id" column="subject_id"/>
+        <result property="name" column="subject_name"/>
+        <result property="description" column="subject_description"/>
+        <collection property="teachers" ofType="com.solvd.schooltimetablegenerator.domain.Teacher" resultMap="teacherMap"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO subject (name, description)
+        VALUES (#{name}, #{description})
+    </insert>
+
+    <delete id="delete" parameterType="Long">
+        DELETE FROM subject WHERE id=#{id}
+    </delete>
+
+    <update id="update" parameterType="com.solvd.schooltimetablegenerator.domain.Subject">
+        UPDATE subject SET name=#{name}, description=#{description}
+        WHERE id=#{id}
+    </update>
+
+    <select id="selectById" parameterType="Long" resultMap="resultMap">select
+        t.id as teacher_id, t.first_name as teacher_first_name ,t.last_name as teacher_last_name,t.email as teacher_email,
+        s.id as subject_id, s.name as subject_name , s.description as subject_description
+        from subject s left join teacher t on t.subject_id=s.id where s.id=#{id};
+    </select>
+
+    <select id="selectAll" resultMap="resultMap">
+        select
+        t.id as teacher_id, t.first_name as teacher_first_name ,t.last_name as teacher_last_name,t.email as teacher_email,
+        s.id as subject_id, s.name as subject_name , s.description as subject_description
+        from subject s left join teacher t on t.subject_id=s.id;
+
+    </select>
+</mapper>

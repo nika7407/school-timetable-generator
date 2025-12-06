@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,9 +31,13 @@ public class TimeTableGeneticAlgorithm {
     private static final int POPULATION_SIZE = 100;
     private static final int GENERATION = 1000;
     private static final Random random = new Random();
-    private static LocalDate date = LocalDate.now();
+    private static LocalDate date = LocalDate.of(2025, 12, 1);
 
     public TimeTableGeneticAlgorithm() {
+    }
+
+    public  static  List<Subject> subjectOfTeacher(Teacher teacher , List<Subject> subjects){
+        return  subjects.stream().filter(x->x.getTeachers().contains(teacher)).toList();
     }
 
     public TimeTableGeneticAlgorithm(List<Teacher> teachers, List<Subject> subjects, List<Classroom> classrooms) {
@@ -79,14 +84,11 @@ public class TimeTableGeneticAlgorithm {
     private Timetable generateSingleTimetable() {
         Timetable timetable = new Timetable();
 
-
         Subject subject1 = randomListElement(subjects);
         timetable.setSubject(subject1);
 
-        List<Teacher> listOfTeachersWithSubject1 = teachers.stream()
-                .filter(teacher -> teacher.getSubjects().contains(subject1)).toList();
+        List<Teacher> listOfTeachersWithSubject1 = subject1.getTeachers();
         timetable.setTeacher(randomListElement(listOfTeachersWithSubject1));
-
 
         return timetable;
     }
@@ -108,7 +110,7 @@ public class TimeTableGeneticAlgorithm {
         return chromosomeList;
     }
 
-    // applyin all constraints and violations to get fitness charachteristic the lower fitness is the better
+    // applying all constraints and violations to get fitness characteristic the lower fitness is the better
     private double calculateFitness(TimetableChromosome chromosome) {
         double fitness = 0.0; // the less is better
         fitness += teachersViolation(chromosome) * 100; //big multiplier for worst violations
@@ -148,7 +150,6 @@ public class TimeTableGeneticAlgorithm {
                 ++violationCounter;
             }
         }
-
         return violationCounter;
     }
 
@@ -165,7 +166,7 @@ public class TimeTableGeneticAlgorithm {
                         .filter(timetable -> timetable.getTeacher().equals(teacher))
                         .toList()
                         .size();
-                if (dailyLoadOfTeacher >= DAILY_SUBJECTS -1) {
+                if (dailyLoadOfTeacher >= DAILY_SUBJECTS - 1) {
                     teacherOverworkedConstraint++;
                 }
             }
@@ -189,7 +190,8 @@ public class TimeTableGeneticAlgorithm {
                             .toList()
                             .size();
                     if (dailySubjectForClass > 1) {
-                        subjectFrequencyConstraint += (dailySubjectForClass - 1);                    }
+                        subjectFrequencyConstraint += (dailySubjectForClass - 1);
+                    }
                 }
             }
         }
@@ -204,7 +206,7 @@ public class TimeTableGeneticAlgorithm {
         }
 
         return population.stream()
-                .min((c1, c2) -> Double.compare(c1.getFitness(), c2.getFitness()))
+                .min(Comparator.comparingDouble(TimetableChromosome::getFitness))
                 .orElse(null);
     }
 
@@ -238,6 +240,7 @@ public class TimeTableGeneticAlgorithm {
     }
 
     private Timetable copyTimetable(Timetable original) {
+
         Timetable copy = new Timetable();
         copy.setDate(original.getDate());
         copy.setSubject(original.getSubject());
@@ -246,6 +249,7 @@ public class TimeTableGeneticAlgorithm {
         copy.setDayOfWeek(original.getDayOfWeek());
         copy.setPeriodNumber(original.getPeriodNumber());
         return copy;
+
     }
 
     //creating new gen and applying all the parameters
@@ -273,15 +277,13 @@ public class TimeTableGeneticAlgorithm {
             if (random.nextDouble() < MUTATION_RATE) {
                 Subject newSubject = randomListElement(subjects);
                 slot.setSubject(newSubject);
-                List<Teacher> teachersForSubject = teachers.stream()
-                        .filter(t -> t.getSubjects().contains(newSubject))
-                        .toList();
+                List<Teacher> teachersForSubject =newSubject.getTeachers();
                 if (!teachersForSubject.isEmpty()) {
                     slot.setTeacher(randomListElement(teachersForSubject));
                 }
             }
 
-        }
+      }
     }
 
     //final method
@@ -295,14 +297,15 @@ public class TimeTableGeneticAlgorithm {
             population = createNewGeneration(population);
 
             if (generation % 10 == 0) {
-                log.info("gen{} fitness {}", generation, bestChromosome.getFitness());
+                System.out.println("Generation " + generation + " Best Fitness: " + bestChromosome.getFitness());
             }
 
-            if(bestChromosome.getFitness()==0){
+            if (bestChromosome.getFitness() == 0) {
                 return bestChromosome.getWeeklyTimetable();
             }
 
         }
         return bestChromosome.getWeeklyTimetable();
     }
+
 }

@@ -5,135 +5,142 @@ import com.solvd.schooltimetablegenerator.domain.Subject;
 import com.solvd.schooltimetablegenerator.domain.Teacher;
 import com.solvd.schooltimetablegenerator.domain.Timetable;
 import com.solvd.schooltimetablegenerator.service.algorithm.TimeTableGeneticAlgorithm;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Main {
-    private static final Logger log = LogManager.getLogger(Main.class);
+
+    public static void printWeeklyGrid(List<Timetable> list) {
+
+        Map<Classroom, Map<LocalDate, List<Timetable>>> grouped =
+                list.stream()
+                        .sorted(
+                                Comparator.comparing((Timetable t) -> t.getClassroom().getNumber())
+                                        .thenComparing(Timetable::getDate)
+                                        .thenComparing(Timetable::getPeriodNumber)
+                        )
+                        .collect(
+                                Collectors.groupingBy(
+                                        Timetable::getClassroom,
+                                        Collectors.groupingBy(Timetable::getDate)
+                                )
+                        );
+
+        for (Classroom room : grouped.keySet()) {
+
+            List<LocalDate> weekDates = grouped.get(room).keySet()
+                    .stream()
+                    .sorted()
+                    .toList();
+
+            if (weekDates.isEmpty()) continue;
+
+            LocalDate monday = weekDates.get(0);
+
+            System.out.println("\n==============================================================");
+            System.out.printf("                 CLASSROOM %s — WEEK OF: %s\n",
+                    room.getNumber(), monday);
+            System.out.println("==============================================================\n");
+
+            System.out.printf("%-15s", "");
+            for (LocalDate d : weekDates) {
+                System.out.printf("%-30s", d.getDayOfWeek().name().substring(0, 3));
+            }
+            System.out.println();
+
+            for (int period = 1; period <= 5; period++) {
+
+                System.out.printf("Period %-7d", period);
+
+                for (LocalDate d : weekDates) {
+                    List<Timetable> dayList = grouped.get(room).get(d);
+
+                    int finalPeriod = period;
+
+                    Timetable match = dayList.stream()
+                            .filter(t -> t.getPeriodNumber() == finalPeriod)
+                            .findFirst()
+                            .orElse(null);
+
+                    if (match == null) {
+                        System.out.printf("%-30s", "");
+                    } else {
+                        String subject = match.getSubject().getName();
+                        String teacher = match.getTeacher().getFirstName() + " " + match.getTeacher().getLastName();
+                        System.out.printf("%-30s", subject + " (" + teacher + ")");
+                    }
+                }
+                System.out.println();
+            }
+
+            System.out.println("--------------------------------------------------------------");
+        }
+    }
 
     public static void main(String[] args) {
-        List<Teacher> teachers = new ArrayList<>();
-        Teacher teacher1 = new Teacher(1L, "Teacher1", "One", "teacher1@school.com");
-        Teacher teacher2 = new Teacher(2L, "Teacher2", "Two", "teacher2@school.com");
-        Teacher teacher3 = new Teacher(3L, "Teacher3", "Three", "teacher3@school.com");
-        Teacher teacher4 = new Teacher(4L, "Teacher4", "Four", "teacher4@school.com");
-        Teacher teacher5 = new Teacher(5L, "Teacher5", "Five", "teacher5@school.com");
-        Teacher teacher6 = new Teacher(6L, "Teacher6", "Six", "teacher6@school.com");
-        Teacher teacher7 = new Teacher(7L, "Teacher7", "Seven", "teacher7@school.com");
-        Teacher teacher8 = new Teacher(8L, "Teacher8", "Eight", "teacher8@school.com");
 
-        List<Subject> subjects = new ArrayList<>();
+        List<Teacher> teachers = new ArrayList<>();
+        teachers.add(new Teacher(1L, "Michael", "Smith", "michael.smith@school.com"));
+        teachers.add(new Teacher(2L, "Anna", "Brown", "anna.brown@school.com"));
+        teachers.add(new Teacher(3L, "Daniel", "Johnson", "daniel.johnson@school.com"));
+        teachers.add(new Teacher(4L, "Laura", "Davis", "laura.davis@school.com"));
+        teachers.add(new Teacher(5L, "Steven", "Miller", "steven.miller@school.com"));
+        teachers.add(new Teacher(6L, "Emily", "Wilson", "emily.wilson@school.com"));
+        teachers.add(new Teacher(7L, "David", "Taylor", "david.taylor@school.com"));
+        teachers.add(new Teacher(8L, "Sarah", "Anderson", "sarah.anderson@school.com"));
+
         Subject math = new Subject(1L, "Mathematics", "Mathematics");
         Subject physics = new Subject(2L, "Physics", "Physics");
         Subject chemistry = new Subject(3L, "Chemistry", "Chemistry");
-        Subject biology = new Subject(4L, "Biology", "Biological");
-        Subject history = new Subject(5L, "History", "history");
-        Subject geography = new Subject(6L, "Geography", "sciences");
+        Subject biology = new Subject(4L, "Biology", "Biology");
+        Subject history = new Subject(5L, "History", "History");
+        Subject geography = new Subject(6L, "Geography", "Geography");
         Subject english = new Subject(7L, "English", "English");
-        Subject computerScience = new Subject(8L, "Computer Science", "Programming");
+        Subject computerScience = new Subject(8L, "Computer Science", "Computer Science");
         Subject pe = new Subject(9L, "PE", "Physical Education");
 
+        math.addTeacher(teachers.getFirst());
+        math.addTeacher(teachers.get(1));
+        physics.addTeacher(teachers.get(2));
+        chemistry.addTeacher(teachers.get(4));
+        biology.addTeacher(teachers.get(5));
+        history.addTeacher(teachers.get(6));
+        geography.addTeacher(teachers.get(7));
+
+        List<Subject> subjects = List.of(math, physics, chemistry, biology, history, geography);
+
+
         List<Classroom> classrooms = new ArrayList<>();
-        Classroom room101 = new Classroom(1L, 101, false);
-        Classroom room102 = new Classroom(2L, 102, false);
-        Classroom room201 = new Classroom(3L, 201, true);
+        classrooms.add(new Classroom(1L, 101, false));
+        classrooms.add(new Classroom(2L, 102, false));
+        classrooms.add(new Classroom(3L, 201, true));
 
+      TimeTableGeneticAlgorithm ga = new TimeTableGeneticAlgorithm(teachers, subjects, classrooms);
+        List<Timetable> timetableList = ga.generateBestTimetable();
 
-        teacher1.addSubject(math);
-        teacher1.addSubject(physics);
-        teacher2.addSubject(physics);
-        teacher2.addSubject(chemistry);
-        teacher3.addSubject(chemistry);
-        teacher3.addSubject(biology);
-        teacher4.addSubject(biology);
-        teacher4.addSubject(history);
-        teacher5.addSubject(history);
-        teacher5.addSubject(geography);
-        teacher6.addSubject(geography);
-        teacher6.addSubject(english);
-        teacher7.addSubject(english);
-        teacher7.addSubject(computerScience);
-        teacher8.addSubject(computerScience);
-        teacher8.addSubject(pe);
-        teacher8.addSubject(math);
+        printWeeklyGrid(timetableList);
 
-        math.addTeacher(teacher1);
-        math.addTeacher(teacher8);
-        physics.addTeacher(teacher1);
-        physics.addTeacher(teacher2);
-        chemistry.addTeacher(teacher2);
-        chemistry.addTeacher(teacher3);
-        biology.addTeacher(teacher3);
-        biology.addTeacher(teacher4);
-        history.addTeacher(teacher4);
-        history.addTeacher(teacher5);
-        geography.addTeacher(teacher5);
-        geography.addTeacher(teacher6);
-        english.addTeacher(teacher6);
-        english.addTeacher(teacher7);
-        computerScience.addTeacher(teacher7);
-        computerScience.addTeacher(teacher8);
-        pe.addTeacher(teacher8);
+      /*  ClassRoomRepositoryImp classRoomRepositoryImp= new ClassRoomRepositoryImp();
+        Classroom newClassroom = new Classroom();
+        newClassroom.setNumber(304);
+        newClassroom.setId(6L);
+        classRoomRepositoryImp.update(newClassroom);
+        System.out.println(classRoomRepositoryImp.selectAll());
 
-        math.addClassroom(room101);
-        math.addClassroom(room102);
+       */
 
-        physics.addClassroom(room201);
-
-        chemistry.addClassroom(room201);
-
-        biology.addClassroom(room201);
-
-        history.addClassroom(room101);
-        history.addClassroom(room102);
-
-        geography.addClassroom(room101);
-        geography.addClassroom(room102);
-        english.addClassroom(room101);
-        english.addClassroom(room102);
-
-        pe.addClassroom(room101);
-        pe.addClassroom(room102);
-
-
-        teachers.add(teacher1);
-        teachers.add(teacher2);
-        teachers.add(teacher3);
-        teachers.add(teacher4);
-        teachers.add(teacher5);
-        teachers.add(teacher6);
-        teachers.add(teacher7);
-        teachers.add(teacher8);
-
-        subjects.add(math);
-        subjects.add(physics);
-        subjects.add(chemistry);
-        subjects.add(biology);
-        subjects.add(history);
-        subjects.add(geography);
-        subjects.add(english);
-        subjects.add(computerScience);
-        subjects.add(pe);
-
-        classrooms.add(room101);
-        classrooms.add(room102);
-        classrooms.add(room201);
-
-
-        TimeTableGeneticAlgorithm ga = new TimeTableGeneticAlgorithm(teachers, subjects, classrooms);
-//        List<Timetable> timetable = ga.generateTimetableForAWeek();
+//        SubjectRepository subjectRepository= new SubjectRepositoryImp();
 //
-       List<Timetable> timetableList = ga.generateBestTimetable();
+//        System.out.println(subjectRepository.selectById(2L));
+//        System.out.println(subjectRepository.selectAll());
 
-        for (Timetable timetable1 : timetableList) {
-            log.info(timetable1.toString());
-        }
 
-        log.info("{} teachers", teachers.size());
-        log.info("{} subjects", subjects.size());
-        log.info("{} classrooms", classrooms.size());
+
+
     }
 }

@@ -1,7 +1,5 @@
 package com.solvd.schooltimetablegenerator.domain;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 
@@ -11,7 +9,6 @@ public class Teacher {
     private String firstName;
     private String lastName;
     private String email;
-    private List<Subject> subjects = new ArrayList<>();
 
     public Teacher() {
     }
@@ -61,22 +58,6 @@ public class Teacher {
         this.email = email;
     }
 
-    public List<Subject> getSubjects() {
-        return subjects;
-    }
-
-    public void setSubjects(List<Subject> subjects) {
-        this.subjects = subjects;
-    }
-
-    public void addSubject(Subject subject) {
-        this.subjects.add(subject);
-    }
-
-    public void removeSubject(Subject subject) {
-        this.subjects.remove(subject);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -91,4 +72,13 @@ public class Teacher {
         return Objects.hash(id, email);
     }
 
+    @Override
+    public String toString() {
+        return "Teacher{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }

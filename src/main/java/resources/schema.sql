@@ -1,42 +1,43 @@
-DROP TABLE IF EXISTS timetable;
-DROP TABLE IF EXISTS teacher_subjects;
-DROP TABLE IF EXISTS subject_classroom;
-DROP TABLE IF EXISTS classrooms;
-DROP TABLE IF EXISTS subjects;
-DROP TABLE IF EXISTS teachers;
+create table classroom (
+id BIGSERIAL PRIMARY KEY,
+number int not null
+)
 
-CREATE TABLE IF NOT EXISTS teachers (
-  ID SERIAL PRIMARY KEY,
-  first_name VARCHAR(20),
-  last_name VARCHAR(50),
-  email VARCHAR(50) UNIQUE
+CREATE TABLE subject (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT
 );
 
-CREATE TABLE IF NOT EXISTS subjects (
-  ID SERIAL PRIMARY KEY,
-  name VARCHAR(30) UNIQUE,
-  description VARCHAR(200)
+
+CREATE TABLE teacher (
+    id BIGSERIAL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    subject_id BIGINT NOT NULL REFERENCES subject(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS classrooms (
-  ID SERIAL PRIMARY KEY,
-  number INTEGER UNIQUE
+
+CREATE TYPE day_of_week AS ENUM (
+    'MONDAY',
+    'TUESDAY',
+    'WEDNESDAY',
+    'THURSDAY',
+    'FRIDAY',
+    'SATURDAY',
+    'SUNDAY'
 );
 
-CREATE TABLE IF NOT EXISTS teacher_subjects (
-  teacher_id INTEGER REFERENCES teachers(ID),
-  subject_id INTEGER REFERENCES subjects(ID),
-  PRIMARY KEY (teacher_id, subject_id)
+
+CREATE TABLE timetable (
+    id BIGSERIAL PRIMARY KEY,
+    date DATE NOT NULL,
+    period_number INT NOT NULL,
+    day_of_week day_of_week NOT NULL,
+
+    subject_id BIGINT NOT NULL REFERENCES subject(id) ON DELETE CASCADE,
+    teacher_id BIGINT NOT NULL REFERENCES teacher(id) ON DELETE CASCADE,
+    classroom_id BIGINT NOT NULL REFERENCES classroom(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS timetable (
-    ID SERIAL PRIMARY KEY,
-    date DATE,
-    subject_id INTEGER NOT NULL REFERENCES subjects(ID) ON DELETE CASCADE,
-    teacher_id INTEGER NOT NULL REFERENCES teachers(ID) ON DELETE CASCADE,
-    classroom_id INTEGER REFERENCES classrooms(ID) ON DELETE SET NULL,
-    day_of_week VARCHAR(10) NOT NULL CHECK (day_of_week IN (
-        'MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY'
-    )),
-    period_number INTEGER NOT NULL CHECK (period_number BETWEEN 1 AND 10)
-);
