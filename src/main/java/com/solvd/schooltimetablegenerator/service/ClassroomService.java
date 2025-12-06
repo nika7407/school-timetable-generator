@@ -7,8 +7,12 @@ import java.util.Optional;
 
 public interface ClassroomService {
     void create(Classroom classroom);
+
     void update(Classroom classroom);
+
     void delete(Long id);
+
     Optional<Classroom> findById(Long id);
+
     List<Classroom> findAll();
 }

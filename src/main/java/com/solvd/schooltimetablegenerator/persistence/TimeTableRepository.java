@@ -8,10 +8,7 @@ import java.util.Optional;
 
 public interface TimeTableRepository {
 
-    void insert(@Param("timetable") Timetable timetable,
-                @Param("classRoomId") Long classRoomId,
-                @Param("teacherId")Long teacherId,
-                @Param("subjectId") Long subjectId);
+    void insert(Timetable timetable);
 
     void update(Timetable timetable);
 

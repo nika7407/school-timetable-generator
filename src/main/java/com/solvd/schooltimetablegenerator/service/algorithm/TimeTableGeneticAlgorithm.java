@@ -36,15 +36,16 @@ public class TimeTableGeneticAlgorithm {
     public TimeTableGeneticAlgorithm() {
     }
 
-    public  static  List<Subject> subjectOfTeacher(Teacher teacher , List<Subject> subjects){
-        return  subjects.stream().filter(x->x.getTeachers().contains(teacher)).toList();
-    }
-
     public TimeTableGeneticAlgorithm(List<Teacher> teachers, List<Subject> subjects, List<Classroom> classrooms) {
         this.teachers = teachers;
         this.subjects = subjects;
         this.classrooms = classrooms;
     }
+
+    private static List<Subject> subjectOfTeacher(Teacher teacher, List<Subject> subjects) {
+        return subjects.stream().filter(x -> x.getTeachers().contains(teacher)).toList();
+    }
+
 
     // generating full timetable for each class for each daysInAWeek and assigning class
     // this essentially returns randomly generated timetable
@@ -277,13 +278,13 @@ public class TimeTableGeneticAlgorithm {
             if (random.nextDouble() < MUTATION_RATE) {
                 Subject newSubject = randomListElement(subjects);
                 slot.setSubject(newSubject);
-                List<Teacher> teachersForSubject =newSubject.getTeachers();
+                List<Teacher> teachersForSubject = newSubject.getTeachers();
                 if (!teachersForSubject.isEmpty()) {
                     slot.setTeacher(randomListElement(teachersForSubject));
                 }
             }
 
-      }
+        }
     }
 
     //final method
@@ -297,7 +298,7 @@ public class TimeTableGeneticAlgorithm {
             population = createNewGeneration(population);
 
             if (generation % 10 == 0) {
-                System.out.println("Generation " + generation + " Best Fitness: " + bestChromosome.getFitness());
+                log.info("gen {} fitness: {}", generation, bestChromosome.getFitness());
             }
 
             if (bestChromosome.getFitness() == 0) {

@@ -28,7 +28,6 @@ public class Timetable {
         this.periodNumber = periodNumber;
     }
 
-
     public Integer getId() {
         return id;
     }

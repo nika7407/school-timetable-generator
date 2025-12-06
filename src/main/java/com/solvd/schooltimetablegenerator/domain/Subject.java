@@ -10,6 +10,7 @@ public class Subject {
     private String name;
     private String description;
     private  List<Teacher> teachers;
+
     public Subject() {}
 
     public Subject(String name, String description) {

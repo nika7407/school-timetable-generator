@@ -5,6 +5,7 @@ import com.solvd.schooltimetablegenerator.domain.Subject;
 import com.solvd.schooltimetablegenerator.domain.Teacher;
 import com.solvd.schooltimetablegenerator.domain.Timetable;
 import com.solvd.schooltimetablegenerator.service.algorithm.TimeTableGeneticAlgorithm;
+import com.solvd.schooltimetablegenerator.service.controller.Controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,73 +15,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Main {
-
-    public static void printWeeklyGrid(List<Timetable> list) {
-
-        Map<Classroom, Map<LocalDate, List<Timetable>>> grouped =
-                list.stream()
-                        .sorted(
-                                Comparator.comparing((Timetable t) -> t.getClassroom().getNumber())
-                                        .thenComparing(Timetable::getDate)
-                                        .thenComparing(Timetable::getPeriodNumber)
-                        )
-                        .collect(
-                                Collectors.groupingBy(
-                                        Timetable::getClassroom,
-                                        Collectors.groupingBy(Timetable::getDate)
-                                )
-                        );
-
-        for (Classroom room : grouped.keySet()) {
-
-            List<LocalDate> weekDates = grouped.get(room).keySet()
-                    .stream()
-                    .sorted()
-                    .toList();
-
-            if (weekDates.isEmpty()) continue;
-
-            LocalDate monday = weekDates.get(0);
-
-            System.out.println("\n==============================================================");
-            System.out.printf("                 CLASSROOM %s — WEEK OF: %s\n",
-                    room.getNumber(), monday);
-            System.out.println("==============================================================\n");
-
-            System.out.printf("%-15s", "");
-            for (LocalDate d : weekDates) {
-                System.out.printf("%-30s", d.getDayOfWeek().name().substring(0, 3));
-            }
-            System.out.println();
-
-            for (int period = 1; period <= 5; period++) {
-
-                System.out.printf("Period %-7d", period);
-
-                for (LocalDate d : weekDates) {
-                    List<Timetable> dayList = grouped.get(room).get(d);
-
-                    int finalPeriod = period;
-
-                    Timetable match = dayList.stream()
-                            .filter(t -> t.getPeriodNumber() == finalPeriod)
-                            .findFirst()
-                            .orElse(null);
-
-                    if (match == null) {
-                        System.out.printf("%-30s", "");
-                    } else {
-                        String subject = match.getSubject().getName();
-                        String teacher = match.getTeacher().getFirstName() + " " + match.getTeacher().getLastName();
-                        System.out.printf("%-30s", subject + " (" + teacher + ")");
-                    }
-                }
-                System.out.println();
-            }
-
-            System.out.println("--------------------------------------------------------------");
-        }
-    }
 
     public static void main(String[] args) {
 
@@ -93,6 +27,7 @@ public class Main {
         teachers.add(new Teacher(6L, "Emily", "Wilson", "emily.wilson@school.com"));
         teachers.add(new Teacher(7L, "David", "Taylor", "david.taylor@school.com"));
         teachers.add(new Teacher(8L, "Sarah", "Anderson", "sarah.anderson@school.com"));
+        teachers.add(new Teacher(9L, "Michael", "Serra", "michael.serra@school.com"));
 
         Subject math = new Subject(1L, "Mathematics", "Mathematics");
         Subject physics = new Subject(2L, "Physics", "Physics");
@@ -104,15 +39,18 @@ public class Main {
         Subject computerScience = new Subject(8L, "Computer Science", "Computer Science");
         Subject pe = new Subject(9L, "PE", "Physical Education");
 
-        math.addTeacher(teachers.getFirst());
         math.addTeacher(teachers.get(1));
         physics.addTeacher(teachers.get(2));
         chemistry.addTeacher(teachers.get(4));
         biology.addTeacher(teachers.get(5));
         history.addTeacher(teachers.get(6));
         geography.addTeacher(teachers.get(7));
+        english.addTeacher(teachers.get(8));
+        computerScience.addTeacher(teachers.get(3));
+        pe.addTeacher(teachers.get(0));
 
-        List<Subject> subjects = List.of(math, physics, chemistry, biology, history, geography);
+
+        List<Subject> subjects = List.of(math, physics, chemistry, biology, history, geography, english, computerScience, pe);
 
 
         List<Classroom> classrooms = new ArrayList<>();
@@ -120,10 +58,11 @@ public class Main {
         classrooms.add(new Classroom(2L, 102, false));
         classrooms.add(new Classroom(3L, 201, true));
 
-      TimeTableGeneticAlgorithm ga = new TimeTableGeneticAlgorithm(teachers, subjects, classrooms);
-        List<Timetable> timetableList = ga.generateBestTimetable();
 
-        printWeeklyGrid(timetableList);
+       // printWeeklyGrid(timetableList);
+
+        Controller.testController(subjects,classrooms, teachers);
+
 
       /*  ClassRoomRepositoryImp classRoomRepositoryImp= new ClassRoomRepositoryImp();
         Classroom newClassroom = new Classroom();

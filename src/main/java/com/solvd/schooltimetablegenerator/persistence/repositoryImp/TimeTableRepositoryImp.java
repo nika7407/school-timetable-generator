@@ -9,7 +9,7 @@ import java.util.Optional;
 public class TimeTableRepositoryImp implements TimeTableRepository {
 
     @Override
-    public void insert(Timetable timetable, Long classRoomId, Long teacherId, Long subjectId) {
+    public void insert(Timetable timetable) {
 
     }
 

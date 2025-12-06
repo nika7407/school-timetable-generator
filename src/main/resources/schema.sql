@@ -17,6 +17,7 @@ CREATE TABLE teacher (
     email VARCHAR(100) UNIQUE NOT NULL,
     subject_id BIGINT NOT NULL REFERENCES subject(id) ON DELETE CASCADE
 );
+dddd
 
 
 CREATE TYPE day_of_week AS ENUM (
