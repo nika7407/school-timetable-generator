@@ -11,7 +11,7 @@ public interface ClassRoomRepository {
 
     void update(Classroom classroom);
 
-    void delete( Long id);
+    void delete(Long id);
 
     Optional<Classroom> selectById(Long id);
 

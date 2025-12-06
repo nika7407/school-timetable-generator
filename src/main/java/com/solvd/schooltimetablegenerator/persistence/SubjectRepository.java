@@ -11,7 +11,7 @@ public interface SubjectRepository {
 
     void update(Subject subject);
 
-    void delete( Long id);
+    void delete(Long id);
 
     Optional<Subject> selectById(Long id);
 

@@ -13,8 +13,10 @@ public class TimetableServiceImpl implements TimetableService {
     private final TimeTableRepository timeTableRepository = new TimeTableRepositoryImp();
 
     @Override
-    public void create(Timetable timetable) {
-        //timeTableRepository.insert(timetable, timetable.getTeacher().getId(), timetable.getSubject().getId(), timetable.getClassroom().getId());
+    public void create(List<Timetable> weeklyTimeTable) {
+        for (Timetable timetable : weeklyTimeTable) {
+            timeTableRepository.insert(timetable);
+        }
     }
 
     @Override

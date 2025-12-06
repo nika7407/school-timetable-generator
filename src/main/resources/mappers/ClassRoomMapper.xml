@@ -8,26 +8,26 @@
     <resultMap id="resultMap" type="com.solvd.schooltimetablegenerator.domain.Classroom" autoMapping="false">
         <id property="id" column="id"/>
         <result property="number" column="number"/>
-    </resultMap>  
-    
+    </resultMap>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO classroom (number)
         VALUES (#{number})
-    </insert>  
-    
+    </insert>
+
     <delete id="delete" parameterType="Long">
         DELETE FROM classroom WHERE id=#{id}
-    </delete> 
-    
+    </delete>
+
     <update id="update" parameterType="com.solvd.schooltimetablegenerator.domain.Classroom">
         UPDATE classroom SET number=#{number}
         WHERE id=#{id}
-    </update> 
-    
+    </update>
+
     <select id="selectById" parameterType="Long" resultMap="resultMap">
         SELECT id, numberFROM classroom WHERE id=#{id}
     </select>
-    
+
     <select id="selectAll" resultMap="resultMap">
         SELECT id, number FROM classroom
     </select>

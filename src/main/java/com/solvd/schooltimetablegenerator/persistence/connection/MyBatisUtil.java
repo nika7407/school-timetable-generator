@@ -1,4 +1,4 @@
-package com.solvd.schooltimetablegenerator.persistence.repositoryImp;
+package com.solvd.schooltimetablegenerator.persistence.connection;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;

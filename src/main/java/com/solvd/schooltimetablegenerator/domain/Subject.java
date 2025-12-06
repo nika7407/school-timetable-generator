@@ -9,9 +9,10 @@ public class Subject {
     private Long id;
     private String name;
     private String description;
-    private  List<Teacher> teachers;
+    private List<Teacher> teachers;
 
-    public Subject() {}
+    public Subject() {
+    }
 
     public Subject(String name, String description) {
         this.name = name;
@@ -30,14 +31,29 @@ public class Subject {
         this.description = description;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
 
     public List<com.solvd.schooltimetablegenerator.domain.Teacher> getTeachers() {
@@ -57,16 +73,17 @@ public class Subject {
                 Objects.equals(name, subject.name);
     }
 
-    public void  addTeacher(com.solvd.schooltimetablegenerator.domain.Teacher teacher) {
+    public void addTeacher(com.solvd.schooltimetablegenerator.domain.Teacher teacher) {
         if (teachers == null) {
             teachers = new ArrayList<>();
         }
         this.teachers.add(teacher);
     }
-    public com.solvd.schooltimetablegenerator.domain.Teacher teacher(com.solvd.schooltimetablegenerator.domain.Teacher teacher){
-        if(teachers==null || teachers.isEmpty()) return null;
-        for(Teacher t: teachers){
-            if(t.equals(teacher)){
+
+    public com.solvd.schooltimetablegenerator.domain.Teacher teacher(com.solvd.schooltimetablegenerator.domain.Teacher teacher) {
+        if (teachers == null || teachers.isEmpty()) return null;
+        for (Teacher t : teachers) {
+            if (t.equals(teacher)) {
                 return t;
             }
         }

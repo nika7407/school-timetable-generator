@@ -1,14 +1,19 @@
-create table classroom (
-id BIGSERIAL PRIMARY KEY,
-number int not null
-)
+DROP TABLE IF EXISTS timetable CASCADE;
+DROP TABLE IF EXISTS teacher CASCADE;
+DROP TABLE IF EXISTS subject CASCADE;
+DROP TABLE IF EXISTS classroom CASCADE;
+DROP TYPE IF EXISTS day_of_week CASCADE;
+
+CREATE TABLE classroom (
+    id BIGSERIAL PRIMARY KEY,
+    number INT NOT NULL
+);
 
 CREATE TABLE subject (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT
 );
-
 
 CREATE TABLE teacher (
     id BIGSERIAL PRIMARY KEY,
@@ -17,8 +22,6 @@ CREATE TABLE teacher (
     email VARCHAR(100) UNIQUE NOT NULL,
     subject_id BIGINT NOT NULL REFERENCES subject(id) ON DELETE CASCADE
 );
-dddd
-
 
 CREATE TYPE day_of_week AS ENUM (
     'MONDAY',
@@ -30,13 +33,11 @@ CREATE TYPE day_of_week AS ENUM (
     'SUNDAY'
 );
 
-
 CREATE TABLE timetable (
     id BIGSERIAL PRIMARY KEY,
     date DATE NOT NULL,
     period_number INT NOT NULL,
     day_of_week day_of_week NOT NULL,
-
     subject_id BIGINT NOT NULL REFERENCES subject(id) ON DELETE CASCADE,
     teacher_id BIGINT NOT NULL REFERENCES teacher(id) ON DELETE CASCADE,
     classroom_id BIGINT NOT NULL REFERENCES classroom(id) ON DELETE CASCADE

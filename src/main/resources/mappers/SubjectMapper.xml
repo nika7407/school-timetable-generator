@@ -11,11 +11,12 @@
         <result property="email" column="teacher_email"/>
     </resultMap>
 
-    <resultMap id="resultMap" type="com.solvd.schooltimetablegenerator.domain.Subject" autoMapping="false" >
+    <resultMap id="resultMap" type="com.solvd.schooltimetablegenerator.domain.Subject" autoMapping="false">
         <id property="id" column="subject_id"/>
         <result property="name" column="subject_name"/>
         <result property="description" column="subject_description"/>
-        <collection property="teachers" ofType="com.solvd.schooltimetablegenerator.domain.Teacher" resultMap="teacherMap"/>
+        <collection property="teachers" ofType="com.solvd.schooltimetablegenerator.domain.Teacher"
+                    resultMap="teacherMap"/>
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
@@ -33,14 +34,16 @@
     </update>
 
     <select id="selectById" parameterType="Long" resultMap="resultMap">select
-        t.id as teacher_id, t.first_name as teacher_first_name ,t.last_name as teacher_last_name,t.email as teacher_email,
+        t.id as teacher_id, t.first_name as teacher_first_name ,t.last_name as teacher_last_name,t.email as
+        teacher_email,
         s.id as subject_id, s.name as subject_name , s.description as subject_description
         from subject s left join teacher t on t.subject_id=s.id where s.id=#{id};
     </select>
 
     <select id="selectAll" resultMap="resultMap">
         select
-        t.id as teacher_id, t.first_name as teacher_first_name ,t.last_name as teacher_last_name,t.email as teacher_email,
+        t.id as teacher_id, t.first_name as teacher_first_name ,t.last_name as teacher_last_name,t.email as
+        teacher_email,
         s.id as subject_id, s.name as subject_name , s.description as subject_description
         from subject s left join teacher t on t.subject_id=s.id;
 

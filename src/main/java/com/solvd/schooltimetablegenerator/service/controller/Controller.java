@@ -4,8 +4,13 @@ import com.solvd.schooltimetablegenerator.domain.Classroom;
 import com.solvd.schooltimetablegenerator.domain.Subject;
 import com.solvd.schooltimetablegenerator.domain.Teacher;
 import com.solvd.schooltimetablegenerator.domain.Timetable;
+import com.solvd.schooltimetablegenerator.service.ClassroomService;
+import com.solvd.schooltimetablegenerator.service.TeacherService;
 import com.solvd.schooltimetablegenerator.service.algorithm.TimeTableGeneticAlgorithm;
+import com.solvd.schooltimetablegenerator.service.impl.ClassroomServiceImpl;
 import com.solvd.schooltimetablegenerator.service.impl.SubjectServiceImpl;
+import com.solvd.schooltimetablegenerator.service.impl.TeacherServiceImpl;
+import com.solvd.schooltimetablegenerator.service.impl.TimetableServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,21 +26,14 @@ public class Controller {
 
     private static final Logger log = LogManager.getLogger(Controller.class);
     private static final SubjectServiceImpl subjectService = new SubjectServiceImpl();
+    private static final ClassroomService classroomService = new ClassroomServiceImpl();
+    private static final TeacherService teacherService = new TeacherServiceImpl();
+    private static final TimetableServiceImpl timetableService = new TimetableServiceImpl();
 
-    public void controllerStart() {
-        List<Subject> subjects;
-        Scanner scanner = new Scanner(System.in);
-        log.info("Hello, Welcome to the timetable Generator!");
-        log.info("First Select the subjects that you want:");
-        for (Subject subject : subjectService.findAll()) {
-            log.info("\nname: {},  id: {}", subject.getName(), subject.getId());
-        }
-
+    public Controller() {
     }
 
-    ;
-
-    public static void testController(List<Subject> subjectss, List<Classroom> classroomss, List<Teacher> teachers) {
+    public void testController(List<Subject> subjectss, List<Classroom> classroomss, List<Teacher> teachers) {
         List<Subject> subjects = new ArrayList<>();
         List<Classroom> classrooms = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
@@ -85,7 +83,7 @@ public class Controller {
         printWeeklyGrid(timetableList);
     }
 
-    public static void printWeeklyGrid(List<Timetable> list) {
+    public void printWeeklyGrid(List<Timetable> list) {
 
         Map<Classroom, Map<LocalDate, List<Timetable>>> grouped =
                 list.stream()
@@ -94,12 +92,12 @@ public class Controller {
                                         .thenComparing(Timetable::getDate)
                                         .thenComparing(Timetable::getPeriodNumber)
                         )
-                        .collect(
-                                Collectors.groupingBy(
-                                        Timetable::getClassroom,
-                                        Collectors.groupingBy(Timetable::getDate)
-                                )
-                        );
+                        .collect(Collectors.groupingBy(
+                                Timetable::getClassroom,
+                                Collectors.groupingBy(Timetable::getDate)
+                        ));
+
+        final int COL_WIDTH = 38;
 
         for (Classroom room : grouped.keySet()) {
 
@@ -112,14 +110,17 @@ public class Controller {
 
             LocalDate monday = weekDates.get(0);
 
-            System.out.println("\n==============================================================");
-            System.out.printf("                 CLASSROOM %s — WEEK OF: %s\n",
+            System.out.println();
+            System.out.println("==============================================================");
+            System.out.printf("                 CLASSROOM %s — WEEK OF: %s%n",
                     room.getNumber(), monday);
-            System.out.println("==============================================================\n");
+            System.out.println("==============================================================");
+            System.out.println();
 
             System.out.printf("%-15s", "");
             for (LocalDate d : weekDates) {
-                System.out.printf("%-30s", d.getDayOfWeek().name().substring(0, 3));
+                String day = d.getDayOfWeek().name().substring(0, 3);
+                System.out.printf("%-" + COL_WIDTH + "s", day);
             }
             System.out.println();
 
@@ -128,28 +129,125 @@ public class Controller {
                 System.out.printf("Period %-7d", period);
 
                 for (LocalDate d : weekDates) {
+
                     List<Timetable> dayList = grouped.get(room).get(d);
+                    if (dayList == null) {
+                        System.out.printf("%-" + COL_WIDTH + "s", "");
+                        continue;
+                    }
 
-                    int finalPeriod = period;
-
+                    int p = period;
                     Timetable match = dayList.stream()
-                            .filter(t -> t.getPeriodNumber() == finalPeriod)
+                            .filter(t -> t.getPeriodNumber() == p)
                             .findFirst()
                             .orElse(null);
 
                     if (match == null) {
-                        System.out.printf("%-30s", "");
+                        System.out.printf("%-" + COL_WIDTH + "s", "");
                     } else {
                         String subject = match.getSubject().getName();
-                        String teacher = match.getTeacher().getFirstName() + " " + match.getTeacher().getLastName();
-                        System.out.printf("%-30s", subject + " (" + teacher + ")");
+                        String teacher = match.getTeacher().getFirstName();
+                        String text = subject + " (" + teacher + ")";
+                        System.out.printf("%-" + COL_WIDTH + "s", text);
                     }
                 }
+
                 System.out.println();
             }
 
-            System.out.println("--------------------------------------------------------------");
         }
+        System.out.println("\n");
+    }
+
+
+    public void controllerStart() {
+        List<Subject> subjectList = subjectService.findAll();
+        List<Classroom> classroomList = classroomService.findAll();
+        List<Teacher> teacherList = teacherService.findAll();
+
+        List<Subject> subjects = new ArrayList<>();
+
+        List<Classroom> classrooms = new ArrayList<>();
+        Scanner scanner = new Scanner(System.in);
+
+        log.info("hello, welcome to the timetable generator!");
+        log.info("first select the subjects that you want:");
+
+        for (Subject subject : subjectList) {
+            log.info("\nname: {} | id: {} |", subject.getName(), subject.getId());
+        }
+
+        log.info("select by writing subjects id (type 'done' when finished or 'all' to add all subjects)");
+
+        String input;
+        while (!(input = scanner.nextLine()).equals("done")) {
+            if (input.equalsIgnoreCase("all")) {
+                subjects.addAll(subjectList);
+                log.info("all subjects added");
+                break;
+            }
+
+            try {
+                Long id = Long.parseLong(input);
+                subjectList.stream()
+                        .filter(subject -> subject.getId().equals(id))
+                        .findFirst()
+                        .ifPresent(subject -> {
+                            if (!subjects.contains(subject)) {
+                                subjects.add(subject);
+                            }
+                        });
+            } catch (NumberFormatException e) {
+                log.info("Please enter a valid number or 'all', or 'done'");
+            }
+        }
+        log.info("subjects selected");
+
+        for (Classroom classroom : classroomList) {
+            log.info("\nclassroom number: {} | id: {} |", classroom.getNumber(), classroom.getId());
+        }
+
+        log.info("now select classes by id and type 'done' after ");
+        while (!(input = scanner.nextLine()).equals("done")) {
+            try {
+                Long id = Long.parseLong(input);
+                classroomList.stream()
+                        .filter(classroom -> classroom.getId().equals(id))
+                        .findFirst()
+                        .ifPresent(classrooms::add);
+            } catch (NumberFormatException e) {
+                log.info("please enter a valid number or 'done'");
+            }
+        }
+        // scanner.close();
+
+        generationSequence(subjectList, classroomList, teacherList);
+    }
+
+    private void generationSequence(List<Subject> subjects, List<Classroom> classrooms, List<Teacher> teachers) {
+        log.info("great, generating timetable");
+        TimeTableGeneticAlgorithm ga = new TimeTableGeneticAlgorithm(teachers, subjects, classrooms);
+        List<Timetable> timetableList = ga.generateBestTimetable();
+        printWeeklyGrid(timetableList);
+
+        Scanner scanner = new Scanner(System.in);
+        log.info("\ndo you want to save this timetable?  \n 1.yes\n 2.no\n 3.regenerate ");
+
+        String saveResponse = scanner.nextLine();
+
+        if (saveResponse.equals("1")) {
+            timetableService.create(timetableList);
+            log.info("timetable saved successfully!");
+            log.info("thanks for using the app\n closing the program");
+        }
+        if (saveResponse.equals("3")) {
+            generationSequence(subjects, classrooms, teachers);
+
+        } else {
+            log.info("Timetable not saved.");
+            log.info("thanks for using the app\n closing the program");
+        }
+
     }
 
 }

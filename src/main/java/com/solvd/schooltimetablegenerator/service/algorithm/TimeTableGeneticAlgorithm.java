@@ -22,9 +22,6 @@ import java.util.Set;
 public class TimeTableGeneticAlgorithm {
 
     private static final Logger log = LogManager.getLogger(TimeTableGeneticAlgorithm.class);
-    private List<Teacher> teachers;
-    private List<Subject> subjects;
-    private List<Classroom> classrooms;
     private static final int DAYS_IN_A_WEEK = 5;
     private static final int DAILY_SUBJECTS = 5;
     private static final double MUTATION_RATE = 0.01;
@@ -32,6 +29,9 @@ public class TimeTableGeneticAlgorithm {
     private static final int GENERATION = 1000;
     private static final Random random = new Random();
     private static LocalDate date = LocalDate.of(2025, 12, 1);
+    private List<Teacher> teachers;
+    private List<Subject> subjects;
+    private List<Classroom> classrooms;
 
     public TimeTableGeneticAlgorithm() {
     }

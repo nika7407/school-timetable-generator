@@ -23,6 +23,7 @@
         <mapper resource="mappers/ClassRoomMapper.xml"/>
         <mapper resource="mappers/SubjectMapper.xml"/>
         <mapper resource="mappers/TeacherMapper.xml"/>
+        <mapper resource="mappers/TimetableMapper.xml"/>
     </mappers>
 
 </configuration>

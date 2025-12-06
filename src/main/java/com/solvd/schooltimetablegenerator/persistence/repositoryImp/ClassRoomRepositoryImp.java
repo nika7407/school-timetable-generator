@@ -2,6 +2,7 @@ package com.solvd.schooltimetablegenerator.persistence.repositoryImp;
 
 import com.solvd.schooltimetablegenerator.domain.Classroom;
 import com.solvd.schooltimetablegenerator.persistence.ClassRoomRepository;
+import com.solvd.schooltimetablegenerator.persistence.connection.MyBatisUtil;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 

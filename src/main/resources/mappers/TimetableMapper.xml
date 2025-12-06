@@ -3,21 +3,85 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.solvd.schooltimetablegenerator.persistence.TimetableRepository"> 
-    
-    
-    <insert id="insert" useGeneratedKeys="true" keyProperty="timetable.id">
-        INSERT INTO timetable (id,date,period_number,day_of_week,subject_id, teacher_id)
-        VALUES (#{timetable.id}, #{timetable.date}, #{}, #{timetable.periodNumber}, #{timetable.dayOfWeek}, #{subjectId}, #{teacherId},#{classRoomId})
+<mapper namespace="com.solvd.schooltimetablegenerator.persistence.TimeTableRepository">
+
+    <resultMap id="resultMap" type="com.solvd.schooltimetablegenerator.domain.Timetable" autoMapping="false">
+        <id property="id" column="id"/>
+        <result property="date" column="date"/>
+        <result property="periodNumber" column="period_number"/>
+        <result property="dayOfWeek" column="day_of_week"/>
+        <association property="subject" javaType="com.solvd.schooltimetablegenerator.domain.Subject">
+            <id property="id" column="subject_id"/>
+            <result property="name" column="subject_name"/>
+        </association>
+        <association property="teacher" javaType="com.solvd.schooltimetablegenerator.domain.Teacher">
+            <id property="id" column="teacher_id"/>
+            <result property="firstName" column="teacher_first_name"/>
+            <result property="lastName" column="teacher_last_name"/>
+        </association>
+        <association property="classroom" javaType="com.solvd.schooltimetablegenerator.domain.Classroom">
+            <id property="id" column="classroom_id"/>
+            <result property="number" column="classroom_number"/>
+        </association>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO timetable (date, period_number, day_of_week, subject_id, teacher_id, classroom_id)
+        VALUES (#{date}, #{periodNumber}, #{dayOfWeek}::day_of_week, #{subject.id}, #{teacher.id}, #{classroom.id})
     </insert>
 
     <delete id="delete" parameterType="Long">
-        DELETE FROM timetable WHERE id=#{id}
+        DELETE FROM timetable WHERE id = #{id}
     </delete>
 
-    <update id="update" parameterType="com.solvd.schooltimetablegenerator.domain.Timetable">
-        UPDATE timetable SET date=#{date}, period_number=#{periodNumber}, day_of_week=#{dayOfWeek}, subject_id=#{subjectId}, teacher_id=#{teacherId}, class_room_id=#{classRoomId}
-        WHERE id=#{id}
+    <update id="update">
+        UPDATE timetable
+        SET subject_id = #{subject.id},
+        teacher_id = #{teacher.id},
+        classroom_id = #{classroom.id}
+        WHERE id = #{id}
     </update>
 
+    <select id="selectById" parameterType="Long" resultMap="resultMap">
+        SELECT
+        t.*,
+        s.name as subject_name,
+        tr.first_name as teacher_first_name,
+        tr.last_name as teacher_last_name,
+        c.number as classroom_number
+        FROM timetable t
+        LEFT JOIN subject s ON t.subject_id = s.id
+        LEFT JOIN teacher tr ON t.teacher_id = tr.id
+        LEFT JOIN classroom c ON t.classroom_id = c.id
+        WHERE t.id = #{id}
+    </select>
+
+    <select id="selectByDate" parameterType="java.time.LocalDate" resultMap="resultMap">
+        SELECT
+        t.*,
+        s.name as subject_name,
+        tr.first_name as teacher_first_name,
+        tr.last_name as teacher_last_name,
+        c.number as classroom_number
+        FROM timetable t
+        LEFT JOIN subject s ON t.subject_id = s.id
+        LEFT JOIN teacher tr ON t.teacher_id = tr.id
+        LEFT JOIN classroom c ON t.classroom_id = c.id
+        WHERE t.date = #{date}
+        ORDER BY t.period_number
+    </select>
+
+    <select id="selectAll" resultMap="resultMap">
+        SELECT
+        t.*,
+        s.name as subject_name,
+        tr.first_name as teacher_first_name,
+        tr.last_name as teacher_last_name,
+        c.number as classroom_number
+        FROM timetable t
+        LEFT JOIN subject s ON t.subject_id = s.id
+        LEFT JOIN teacher tr ON t.teacher_id = tr.id
+        LEFT JOIN classroom c ON t.classroom_id = c.id
+        ORDER BY t.date, t.period_number
+    </select>
 </mapper>

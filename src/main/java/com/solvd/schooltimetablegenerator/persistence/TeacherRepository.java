@@ -11,9 +11,9 @@ public interface TeacherRepository {
     void insert(@Param("teacher") Teacher teacher,
                 @Param("subjectId") Long subjectId);
 
-    void update( Teacher teacher);
+    void update(Teacher teacher);
 
-    void delete( Long id);
+    void delete(Long id);
 
     Optional<Teacher> selectById(Long id);
 

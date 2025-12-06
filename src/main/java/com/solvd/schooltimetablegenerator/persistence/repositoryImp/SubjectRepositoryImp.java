@@ -2,6 +2,7 @@ package com.solvd.schooltimetablegenerator.persistence.repositoryImp;
 
 import com.solvd.schooltimetablegenerator.domain.Subject;
 import com.solvd.schooltimetablegenerator.persistence.SubjectRepository;
+import com.solvd.schooltimetablegenerator.persistence.connection.MyBatisUtil;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
@@ -35,8 +36,8 @@ public class SubjectRepositoryImp implements SubjectRepository {
     @Override
     public void delete(Long id) {
 
-        try(SqlSession session=sqlSessionFactory.openSession()){
-            SubjectRepository subjectRepository=session.getMapper(SubjectRepository.class);
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            SubjectRepository subjectRepository = session.getMapper(SubjectRepository.class);
             subjectRepository.delete(id);
             session.commit();
         }

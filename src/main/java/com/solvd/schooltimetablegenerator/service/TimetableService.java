@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface TimetableService {
 
-    void create(Timetable timetable);
+    void create(List<Timetable> weeklyTimeTable);
 
     void update(Timetable timetable);
 
