@@ -15,7 +15,7 @@ public class MyBatisUtil {
     static {
         try {
             Properties properties = new Properties();
-            InputStream propStream = Resources.getResourceAsStream("db.properties");
+            InputStream propStream = Resources.getResourceAsStream("db-example.properties.");
             properties.load(propStream);
             InputStream configStream = Resources.getResourceAsStream("mybatis-config.xml");
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(configStream, properties);
