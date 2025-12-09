@@ -161,9 +161,9 @@ public class Controller {
 
 
     public void controllerStart() {
-        List<Subject> subjectList = subjectService.findAll();
-        List<Classroom> classroomList = classroomService.findAll();
-        List<Teacher> teacherList = teacherService.findAll();
+        List<Subject> fullSbjectList = subjectService.findAll();
+        List<Classroom> fullClassroomList = classroomService.findAll();
+        List<Teacher> fullTeacherList = teacherService.findAll();
 
         List<Subject> subjects = new ArrayList<>();
 
@@ -173,7 +173,7 @@ public class Controller {
         log.info("hello, welcome to the timetable generator!");
         log.info("first select the subjects that you want:");
 
-        for (Subject subject : subjectList) {
+        for (Subject subject : fullSbjectList) {
             log.info("\nname: {} | id: {} |", subject.getName(), subject.getId());
         }
 
@@ -182,14 +182,14 @@ public class Controller {
         String input;
         while (!(input = scanner.nextLine()).equals("done")) {
             if (input.equalsIgnoreCase("all")) {
-                subjects.addAll(subjectList);
+                subjects.addAll(fullSbjectList);
                 log.info("all subjects added");
                 break;
             }
 
             try {
                 Long id = Long.parseLong(input);
-                subjectList.stream()
+                fullSbjectList.stream()
                         .filter(subject -> subject.getId().equals(id))
                         .findFirst()
                         .ifPresent(subject -> {
@@ -203,7 +203,7 @@ public class Controller {
         }
         log.info("subjects selected");
 
-        for (Classroom classroom : classroomList) {
+        for (Classroom classroom : fullClassroomList) {
             log.info("\nclassroom number: {} | id: {} |", classroom.getNumber(), classroom.getId());
         }
 
@@ -211,7 +211,7 @@ public class Controller {
         while (!(input = scanner.nextLine()).equals("done")) {
             try {
                 Long id = Long.parseLong(input);
-                classroomList.stream()
+                fullClassroomList.stream()
                         .filter(classroom -> classroom.getId().equals(id))
                         .findFirst()
                         .ifPresent(classrooms::add);
@@ -221,7 +221,7 @@ public class Controller {
         }
         // scanner.close();
 
-        generationSequence(subjectList, classroomList, teacherList);
+        generationSequence(subjects, classrooms, fullTeacherList);
     }
 
     private void generationSequence(List<Subject> subjects, List<Classroom> classrooms, List<Teacher> teachers) {
